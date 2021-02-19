@@ -1,63 +1,64 @@
 function init() {
     
-    d3.json("samples.json").then((jsons) => {
-
-      console.log(jsons);
+  // LOAD DATA & CONSOLE.LOG IT
+    d3.json("samples.json").then((sampleData) => {
+      console.log(sampleData);
+      console.log(sampleData.names);
+      var age = sampleData.metadata.map(object => object.age)
+      console.log(age);
     
+// CREATE DROPDOWN
       var dropdown = d3.select("#selDataset");
     
-        jsons.names.forEach(function (name) {
+      // APPEND NAMES
+        sampleData.names.forEach(function (name) {
                 console.log(name)
                 dropdown.append("option").text(name).attr("value", name)
             });
     
-            demoinfo(jsons.names[0]);
-            plots(jsons.names[0]);
+            demographic(sampleData.names[0]);
+            plots(sampleData.names[0]);
         });
-
       };
 
         function optionChanged(name) {
-          console.log(name)
-          demoinfo(name)
-          plots(name)
+          demographic(name)
         };
 
-        // var sortedByGreekSearch = jsons.sort((a, b) => b.greekSearchResults - a.greekSearchResults);
+  // CREATE FUNCTION FOR SPECFIC DEMOGRAPHIC INFO
+    function demographic(name) {
 
-// Slice the first 10 objects for plotting
-slicedData = jsons.slice(0, 10);
+      // SAMPLE DATA EXTRACTION
+      d3.json("samples.json").then((sampleData) => {
 
-// Reverse the array to accommodate Plotly's defaults
-reversedData = slicedData.reverse();
+          // PULL METADATA FOR DEMOGRAPHIC INFO
+          var metadata = sampleData.metadata;
 
-// Trace1 for the Greek Data
-var trace1 = {
-  x: reversedData.map(object => object.greekSearchResults),
-  y: reversedData.map(object => object.greekName),
-  text: reversedData.map(object => object.greekName),
-  name: "Greek",
-  type: "bar",
-  orientation: "h"
-};
+          // CHECK TO SEE IF EVERYTHING CALLS CORRECTLY
+          console.log(metadata);
 
-// data
-var data = [trace1];
+          // CHECK TO SEE IF GENDER POPS UP
+          var titles = sampleData.metadata.map(object =>  object.gender);
+          console.log(titles)
 
-// Apply the group bar mode to the layout
-var layout = {
-  title: "Greek gods search results",
-  margin: {
-    l: 100,
-    r: 100,
-    t: 100,
-    b: 100
-  }
-};
+          // CHECK TO SEE IF NAMES POP UP
+          var nameMeta = metadata.filter(object => object.id == name)[0];
+          console.log(nameMeta)
 
-// Render the plot to the div tag with id "plot"
-Plotly.newPlot("plot", data, layout);
+          var panel = d3.select("#sample-metadata");
+          panel.html("");
 
-    // };
+          Object.entries(nameMeta).forEach(([key, value]) => {
 
+              // APPEND DATA
+              panel.append("h5").text(`${key}: ${value}`);
+          });
+
+      });
+    };
+ 
+
+// };
 init();
+
+
